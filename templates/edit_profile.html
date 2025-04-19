@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Profilni tahrirlash{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="text-center mb-4">{{ _('Profilni tahrirlash') }}</h1>
+            <form method="post" action="{{ url_for('edit_profile') }}" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="username" class="form-label">{{ _('Foydalanuvchi nomi') }}</label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="profile_picture" class="form-label">{{ _('Profil rasmi') }}</label>
+                    <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*">
+                    {% if profile_picture %}
+                        <img src="{{ url_for('static', filename='uploads/' + profile_picture) }}" alt="Current Profile Picture" class="img-fluid mt-2" style="max-width: 150px;">
+                    {% endif %}
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">{{ _('Saqlash') }}</button>
+                    <a href="{{ url_for('profile') }}" class="btn btn-secondary ms-2">{{ _('Orqaga') }}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

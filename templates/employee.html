@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Xodim sahifasi{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-center" style="color: #007bff; font-weight: bold;"><i class="bi bi-person-workspace me-2"></i> {{ _('Xodim Sahifasi') }}</h1>
+            <div>
+                <a href="{{ url_for('profile') }}" class="btn btn-info me-2">
+                    {% if profile_picture %}
+                        <img src="{{ url_for('static', filename='uploads/' + profile_picture) }}" alt="Profile Picture" width="30" height="30" class="rounded-circle">
+                    {% else %}
+                        <i class="bi bi-person-circle"></i>
+                    {% endif %}
+                    {{ username }}
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">{{ _('Chiqish') }}</a>
+            </div>
+        </div>
+
+        <h2 class="mb-4"><i class="bi bi-hourglass-split me-2"></i> {{ _('Kutishdagi navbatlar') }}</h2>
+        <table class="table table-striped" id="employeeQueueContainer">
+            <thead>
+                <tr>
+                    <th>{{ _('Navbat raqami') }}</th>
+                    <th>{{ _('Xizmat turi') }}</th>
+                    <th>{{ _('Vaqt') }}</th>
+                    <th>{{ _('Amallar') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for queue in queue_data.items %}
+                <tr>
+                    <td>{{ queue.formatted_queue_number }}</td>
+                    <td>{{ queue.service_type.name }}</td>
+                    <td>{{ queue.created_at }}</td>
+                    <td>
+                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#serveModal" onclick="setQueueId({{ queue.id }})">{{ _('Qabul qilish') }}</button>
+                        <button class="btn btn-warning btn-sm" onclick="requeue({{ queue.id }})">{{ _('Qayta navbat') }}</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <nav>
+            <ul class="pagination justify-content-center">
+                {% if queue_data.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('employee', page=queue_data.prev_num) }}">{{ _('Oldingi') }}</a>
+                </li>
+                {% endif %}
+                {% for page in queue_data.iter_pages() %}
+                {% if page %}
+                    <li class="page-item {% if page == queue_data.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('employee', page=page) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+                {% endfor %}
+                {% if queue_data.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('employee', page=queue_data.next_num) }}">{{ _('Keyingi') }}</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <div class="modal fade" id="serveModal" tabindex="-1" aria-labelledby="serveModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="serveModalLabel">{{ _('Navbatni qabul qilish') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="serveForm">
+                        <input type="hidden" id="queueId" name="queueId">
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">{{ _('Ism') }}</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">{{ _('Familiya') }}</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="group" class="form-label">{{ _('Guruh') }}</label>
+                            <input type="text" class="form-control" id="group" name="group" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ _('Yopish') }}</button>
+                    <button type="button" class="btn btn-success" onclick="serveQueue()">{{ _('Qabul qilish') }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script>
+        let queueId = null;
+
+        function setQueueId(id) {
+            queueId = id;
+            document.getElementById('queueId').value = id;
+        }
+
+        function serveQueue() {
+            const firstName = document.getElementById('first_name').value.trim();
+            const lastName = document.getElementById('last_name').value.trim();
+            const group = document.getElementById('group').value.trim();
+
+            // Forma tekshiruvi
+            if (!firstName || !lastName || !group) {
+                alert("Iltimos, barcha maydonlarni to‘ldiring!");
+                return;
+            }
+
+            fetch(`/serve_queue/${queueId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `first_name=${encodeURIComponent(firstName)}&last_name=${encodeURIComponent(lastName)}&group=${encodeURIComponent(group)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('serveModal')).hide();
+                    location.reload();
+                }
+            })
+            .catch(error => alert("Xatolik: " + error.message));
+        }
+
+        function requeue(id) {
+            if (confirm("{{ _('Navbatni qayta qo‘shishni xohlaysizmi?') }}")) {
+                fetch(`/requeue/${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) throw new Error(data.error);
+                    location.reload();
+                })
+                .catch(error => alert("Xatolik: " + error.message));
+            }
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% for queue in queue_data %}
+<tr>
+    <td>{{ queue.formatted_queue_number }}</td>
+    <td>{{ queue.service_type.name }}</td>
+    <td>{{ queue.created_at }}</td>
+    <td>
+        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#serveModal" onclick="setQueueId({{ queue.id }})">{{ _('Qabul qilish') }}</button>
+        <button class="btn btn-warning btn-sm" onclick="requeue({{ queue.id }})">{{ _('Qayta navbat') }}</button>
+    </td>
+</tr>
+{% endfor %}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-5" style="color: #007bff; font-weight: bold;">{{ _('Profil') }}</h1>
+        <div class="text-center mb-4">
+            {% from 'macros.html' import display_profile_picture %}
+            {{ display_profile_picture(profile_picture) }}
+        </div>
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+        <div class="alert alert-success">{{ success }}</div>
+        {% endif %}
+        <div id="profileForm">
+            <div class="mb-3">
+                <label for="username" class="form-label">{{ _('Foydalanuvchi nomi') }}</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ username }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">{{ _('Yangi parol') }}</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="{{ _('Agar o‘zgartirishni xohlamasangiz, bo‘sh qoldiring') }}">
+            </div>
+            <div class="mb-3">
+                <label for="confirm_password" class="form-label">{{ _('Parolni tasdiqlash') }}</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+            </div>
+            <div class="mb-3">
+                <label for="profile_picture" class="form-label">{{ _('Profil rasmi') }}</label>
+                <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*">
+            </div>
+            <button type="button" class="btn btn-primary" onclick="updateProfile()">{{ _('Saqlash') }}</button>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">{{ _('Chiqish') }}</a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script>
+        function updateProfile() {
+            const formData = new FormData();
+            formData.append('username', document.getElementById('username').value);
+            formData.append('password', document.getElementById('password').value);
+            formData.append('confirm_password', document.getElementById('confirm_password').value);
+            const profilePicture = document.getElementById('profile_picture').files[0];
+            if (profilePicture) {
+                formData.append('profile_picture', profilePicture);
+            }
+
+            fetch('/profile', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(() => location.reload())
+            .catch(error => alert("Xatolik: " + error.message));
+        }
+    </script>
+</body>
+</html>

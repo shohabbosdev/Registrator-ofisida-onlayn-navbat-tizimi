@@ -1,0 +1,12 @@
+{% for queue in queue_data %}
+<div class="col-md-4 col-sm-6 mb-4">
+    <div class="card queue-card">
+        <div class="card-body text-center">
+            <i class="bi bi-ticket-detailed queue-icon mb-3"></i>
+            <h5 class="card-title">{{ queue.formatted_queue_number }}</h5>
+            <p class="card-text"><i class="bi bi-gear me-1"></i> {{ queue.service_type.name }}</p>
+            <p class="card-text"><i class="bi bi-clock me-1"></i> {{ queue.created_at }}</p>
+        </div>
+    </div>
+</div>
+{% endfor %}

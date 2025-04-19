@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Monitor{% endblock %}
+
+{% block extra_head %}
+<style>
+    .queue-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #e6f0fa, #a3bffa);
+    }
+    .queue-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .queue-icon {
+        font-size: 2rem;
+        color: #007bff;
+    }
+    .recent-queue {
+        background: linear-gradient(135deg, #d1d5db, #ffffff);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-center" style="color: #007bff; font-weight: bold;"><i class="bi bi-display me-2"></i> {{ _('Navbat Monitori') }}</h1>
+    </div>
+    
+    <h2 class="mb-4"><i class="bi bi-hourglass-split me-2"></i> {{ _('Kutishdagi navbatlar') }}</h2>
+    <div class="row" id="queueContainer">
+        {% for queue in queue_data.items %}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card queue-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-ticket-detailed queue-icon mb-3"></i>
+                    <h5 class="card-title">{{ queue.formatted_queue_number }}</h5>
+                    <p class="card-text"><i class="bi bi-gear me-1"></i> {{ queue.service_type.name }}</p>
+                    <p class="card-text"><i class="bi bi-clock me-1"></i> {{ queue.created_at }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if queue_data.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('monitor', page=queue_data.prev_num) }}">{{ _('Oldingi') }}</a>
+            </li>
+            {% endif %}
+            {% for page in queue_data.iter_pages() %}
+            {% if page %}
+                <li class="page-item {% if page == queue_data.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('monitor', page=page) }}">{{ page }}</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+            {% endfor %}
+            {% if queue_data.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('monitor', page=queue_data.next_num) }}">{{ _('Keyingi') }}</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <h2 class="mb-4"><i class="bi bi-check-circle me-2"></i> {{ _('Oxirgi xizmat qilingan navbatlar') }}</h2>
+    <div class="row">
+        {% if recent_queues %}
+            {% for queue in recent_queues %}
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card queue-card recent-queue">
+                    <div class="card-body text-center">
+                        <i class="bi bi-ticket-perforated queue-icon mb-3 text-success"></i>
+                        <h5 class="card-title">{{ queue.formatted_queue_number }}</h5>
+                        <p class="card-text"><i class="bi bi-gear me-1"></i> {{ queue.service_type.name }}</p>
+                        <p class="card-text"><i class="bi bi-clock me-1"></i> {{ queue.created_at }}</p>
+                        <p class="card-text"><i class="bi bi-person me-1"></i> {{ queue.first_name or 'Noma\'lum' }} {{ queue.last_name or '' }}</p>
+                        <p class="card-text"><i class="bi bi-people me-1"></i> {{ queue.group or 'Noma\'lum' }}</p>
+                        <p class="card-text"><i class="bi bi-person-check me-1"></i> {{ queue.employee or 'Noma\'lum' }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-muted">{{ _('Hozircha xizmat qilingan navbatlar yo‘q.') }}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+{% endblock %}

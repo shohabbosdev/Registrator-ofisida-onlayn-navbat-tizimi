@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Onlayn navbat tizimi{% endblock %}
+
+{% block extra_head %}
+<style>
+    body {
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    .navbar {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    .navbar-nav .nav-link {
+        color: white !important;
+        font-weight: 500;
+    }
+    .navbar-nav .nav-link:hover {
+        color: #a3bffa !important;
+    }
+    .hero-section {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 50px 0;
+    }
+    .hero-section h1 {
+        font-size: 3rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+    .hero-section p {
+        font-size: 1.2rem;
+        opacity: 0.8;
+        margin-bottom: 30px;
+    }
+    .hero-section img {
+        max-width: 100%;
+        height: auto;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 10px 30px;
+        font-size: 1.2rem;
+        transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+        background-color: #0e61b9;
+    }
+    .illustration {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        max-width: 40%;
+        opacity: 0.9;
+    }
+    @media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+        .illustration {
+            position: static;
+            transform: none;
+            max-width: 80%;
+            margin: 20px auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Navbar menyusi -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url_for('landing') }}">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="max-width: 75px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('student') }}">{{ _('Talaba sahifasi') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('employee') }}">{{ _('Xodim sahifasi') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('monitor') }}">{{ _('Monitor') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('admin') }}">{{ _('Admin') }}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero section -->
+<section class="hero-section">
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1>{{ _("O'zbekiston Milliy universiteti Jizzax filialining Registrator ofisi") }}</h1>
+                <p>{{ _('Bakalavr va magistratura bosqichida tahsil olayotgan talabalar uchun xizmat ko\'rsatish') }}</p>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">{{ _('Kirish') }}</a>
+            </div>
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='images/10893357.jpg') }}" width="550" alt="3D Illustration" class="illustration">
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

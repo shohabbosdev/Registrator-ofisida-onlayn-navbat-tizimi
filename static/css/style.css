@@ -1,0 +1,21 @@
+.service-btn {
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    padding: 15px;
+    font-size: 1.2rem;
+}
+
+.service-btn:hover {
+    transform: scale(1.05);
+    background-color: #0d6efd;
+    color: white;
+}
+
+.service-btn.active {
+    background-color: #0d6efd;
+    color: white;
+    transform: scale(1.05);
+}
+
+#clock-display {
+    font-size: 14px;
+}
