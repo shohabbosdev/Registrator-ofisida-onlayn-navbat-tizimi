@@ -110,10 +110,24 @@ with app.app_context():
             ]
             for service in services:
                 db.session.add(service)
-            admin = User(username='admin', password=generate_password_hash('admin'), role='admin')
-            employee = User(username='employee', password=generate_password_hash('employee'), role='employee')
+            admin = User(username='root', password=generate_password_hash('Shoh@1994'), role='admin')
+            table1 = User(username='table1', password=generate_password_hash('table1'), role='employee')
+            table2 = User(username='table2', password=generate_password_hash('table2'), role='employee')
+            table3 = User(username='table2', password=generate_password_hash('table3'), role='employee')
+            table4 = User(username='table2', password=generate_password_hash('table4'), role='employee')
+            table5 = User(username='table2', password=generate_password_hash('table5'), role='employee')
+            table6 = User(username='table2', password=generate_password_hash('table6'), role='employee')
+            table7 = User(username='table2', password=generate_password_hash('table7'), role='employee')
+            
             db.session.add(admin)
-            db.session.add(employee)
+            db.session.add(table1)
+            db.session.add(table2)
+            db.session.add(table3)
+            db.session.add(table4)
+            db.session.add(table5)
+            db.session.add(table6)
+            db.session.add(table7)
+            
             db.session.commit()
             logger.debug("Xizmat turlari va foydalanuvchilar muvaffaqiyatli qo'shildi!")
         else:
